@@ -43,16 +43,17 @@ export default function POPreview({ poData, onDownload, onPrint }: POPreviewProp
         <div id="po-preview" className="bg-white border border-slate-200 rounded-lg p-8 text-sm">
           {/* Header - Logo and Title on Same Line */}
           <div className="mb-8 pb-6 border-b-2 border-slate-900">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-start justify-between mb-4">
               {poData.company.logo && (
                 <img src={poData.company.logo} alt="Company logo" className="h-16 object-contain" />
               )}
-              <h1 className="text-3xl font-bold text-slate-900">PURCHASE ORDER</h1>
-              {!poData.company.logo && <div className="w-16"></div>}
-            </div>
-            <div className="text-center">
-              <p className="text-slate-600">PO Number: {poData.poNumber || 'N/A'}</p>
-              <p className="text-slate-600">Date: {poData.poDate || 'N/A'}</p>
+              <div className="flex-grow text-right">
+                <h1 className="text-3xl font-bold text-slate-900">PURCHASE ORDER</h1>
+                <div className="text-right">
+                  <p className="text-slate-600">PO Number: {poData.poNumber || 'N/A'}</p>
+                  <p className="text-slate-600">Date: {poData.poDate || 'N/A'}</p>
+                </div>
+              </div>
             </div>
           </div>
           
@@ -96,18 +97,18 @@ export default function POPreview({ poData, onDownload, onPrint }: POPreviewProp
           </div>
           
           {/* Line Items Table */}
-          <div className="mb-8">
-            <table className="w-full border-collapse">
+          <div className="mb-8 overflow-x-auto">
+            <table className="w-full border-collapse" style={{ tableLayout: 'auto', minWidth: '600px' }}>
               <thead>
                 <tr style={{ backgroundColor: '#dbeafe' }} className="text-slate-900">
-                  <th className="border border-slate-300 p-2 text-left">#</th>
-                  <th className="border border-slate-300 p-2 text-left">Description</th>
-                  <th className="border border-slate-300 p-2 text-left">Unit</th>
-                  <th className="border border-slate-300 p-2 text-right">Qty</th>
-                  <th className="border border-slate-300 p-2 text-right">Rate</th>
-                  <th className="border border-slate-300 p-2 text-right">Amount</th>
-                  <th className="border border-slate-300 p-2 text-right">Tax</th>
-                  <th className="border border-slate-300 p-2 text-right">Total</th>
+                  <th className="border border-slate-300 p-2 text-left" style={{ width: '5%' }}>#</th>
+                  <th className="border border-slate-300 p-2 text-left" style={{ width: '35%' }}>Description</th>
+                  <th className="border border-slate-300 p-2 text-left" style={{ width: '10%' }}>Unit</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '10%' }}>Qty</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '10%' }}>Rate</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '10%' }}>Amount</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '10%' }}>Tax</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '10%' }}>Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -115,7 +116,7 @@ export default function POPreview({ poData, onDownload, onPrint }: POPreviewProp
                   poData.lineItems.map((item, index) => (
                     <tr key={item.id} className="hover:bg-slate-50">
                       <td className="border border-slate-300 p-2">{index + 1}</td>
-                      <td className="border border-slate-300 p-2">{item.description || 'N/A'}</td>
+                      <td className="border border-slate-300 p-2" style={{ wordWrap: 'break-word', maxWidth: '200px' }}>{item.description || 'N/A'}</td>
                       <td className="border border-slate-300 p-2">{item.unit || '-'}</td>
                       <td className="border border-slate-300 p-2 text-right">{item.quantity}</td>
                       <td className="border border-slate-300 p-2 text-right">₹{item.rate.toFixed(2)}</td>

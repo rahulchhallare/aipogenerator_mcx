@@ -150,14 +150,10 @@ export default function Index() {
   };
   
   const handleDownload = () => {
-    toast.success('Preparing PDF download...', {
-      description: 'Your PO will be downloaded shortly'
-    });
-    
-    // Small delay to show the toast before printing
+    // Small delay before printing
     setTimeout(() => {
       window.print();
-    }, 500);
+    }, 100);
   };
   
   const handlePrint = () => {
@@ -322,6 +318,7 @@ export default function Index() {
           body {
             margin: 0;
             padding: 0;
+            background: white !important;
           }
           
           .no-print,
@@ -330,16 +327,16 @@ export default function Index() {
           }
           
           #po-preview {
-            position: absolute;
-            left: 0;
-            top: 0;
             width: 100%;
             max-width: 100%;
-            margin: 0;
+            margin: 0 auto;
             padding: 20px;
             box-shadow: none !important;
             border: none !important;
             background: white !important;
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
           }
           
           /* Ensure proper page breaks */
@@ -350,6 +347,35 @@ export default function Index() {
           /* Prevent elements from breaking across pages */
           table, .signature-section {
             page-break-inside: avoid;
+          }
+          
+          /* Remove any extra spacing that might cause blank pages */
+          html, body {
+            height: auto !important;
+            overflow: visible !important;
+          }
+          
+          /* Ensure the card wrapper doesn't add extra space */
+          .card {
+            box-shadow: none !important;
+            border: none !important;
+            margin: 0 !important;
+          }
+          
+          .card-content {
+            padding: 0 !important;
+          }
+          
+          /* Ensure signature section is visible */
+          .signature-section {
+            page-break-inside: avoid;
+            margin-top: 2rem !important;
+          }
+          
+          /* Prevent content cutoff */
+          #po-preview {
+            min-height: auto !important;
+            overflow: visible !important;
           }
         }
       `}</style>
