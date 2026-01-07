@@ -27,10 +27,10 @@ export interface LineItem {
   unit: string;
   quantity: number;
   rate: number;
-  taxRate: number;
   amount: number;
   taxAmount: number;
   total: number;
+  taxRate?: number;
 }
 
 export interface POData {

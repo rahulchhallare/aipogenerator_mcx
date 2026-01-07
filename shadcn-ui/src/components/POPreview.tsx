@@ -10,8 +10,78 @@ interface POPreviewProps {
 }
 
 export default function POPreview({ poData, onDownload, onPrint }: POPreviewProps) {
+  const generatePDF = () => {
+    const previewElement = document.getElementById('po-preview');
+    if (!previewElement) return;
+
+    // Create an invisible iframe for printing
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+    document.body.appendChild(iframe);
+
+    const printDocument = iframe.contentWindow?.document;
+    if (!printDocument) return;
+
+    // Copy all styles from the current document head
+    const styles = Array.from(document.head.querySelectorAll('style, link[rel="stylesheet"]'))
+      .map(style => style.outerHTML)
+      .join('\n');
+
+    const contentHTML = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Purchase Order - ${poData.poNumber || 'N/A'}</title>
+          ${styles}
+          <style>
+            @page {
+              margin: 0;
+            }
+            body {
+              background-color: white;
+              margin: 0;
+              padding: 40px;
+            }
+            @media print {
+              body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          ${previewElement.outerHTML}
+        </body>
+      </html>
+    `;
+
+    printDocument.write(contentHTML);
+    printDocument.close();
+
+    setTimeout(() => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+      // Remove iframe after a delay
+      setTimeout(() => {
+        document.body.removeChild(iframe);
+      }, 1000);
+    }, 500);
+  };
+
+  const handlePrint = () => {
+    generatePDF();
+  };
+
+  const handleDownload = () => {
+    generatePDF();
+  };
+
   return (
-    <Card className="shadow-md sticky top-6">
+    <Card className="shadow-md sticky top-6 h-fit">
       <CardHeader className="bg-slate-50 no-print">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-slate-900">
@@ -20,17 +90,19 @@ export default function POPreview({ poData, onDownload, onPrint }: POPreviewProp
           </CardTitle>
           <div className="flex gap-2">
             <Button 
+              type="button"
               size="sm" 
               variant="outline"
-              onClick={onPrint}
+              onClick={handlePrint}
               className="border-slate-300"
             >
               <Printer className="h-4 w-4 mr-1" />
               Print
             </Button>
             <Button 
+              type="button"
               size="sm"
-              onClick={onDownload}
+              onClick={handleDownload}
               className="bg-blue-600 hover:bg-blue-700"
             >
               <Download className="h-4 w-4 mr-1" />
@@ -65,7 +137,7 @@ export default function POPreview({ poData, onDownload, onPrint }: POPreviewProp
                 <p className="font-semibold">{poData.company.name || 'Company Name'}</p>
                 {poData.company.gst && <p>GST: {poData.company.gst}</p>}
                 <p>{poData.company.address || 'Address'}</p>
-                <p>{poData.company.city && poData.company.state ? `${poData.company.city}, ${poData.company.state}` : ''} {poData.company.pincode}</p>
+                <p>{[poData.company.city, poData.company.state, poData.company.pincode].filter(Boolean).join(', ')}</p>
                 <p>{poData.company.phone}</p>
                 <p>{poData.company.email}</p>
               </div>
@@ -77,7 +149,7 @@ export default function POPreview({ poData, onDownload, onPrint }: POPreviewProp
                 <p className="font-semibold">{poData.vendor.name || 'Vendor Name'}</p>
                 {poData.vendor.gst && <p>GST: {poData.vendor.gst}</p>}
                 <p>{poData.vendor.address || 'Address'}</p>
-                <p>{poData.vendor.city && poData.vendor.state ? `${poData.vendor.city}, ${poData.vendor.state}` : ''} {poData.vendor.pincode}</p>
+                <p>{[poData.vendor.city, poData.vendor.state, poData.vendor.pincode].filter(Boolean).join(', ')}</p>
                 <p>{poData.vendor.phone}</p>
                 <p>{poData.vendor.email}</p>
               </div>
@@ -97,32 +169,32 @@ export default function POPreview({ poData, onDownload, onPrint }: POPreviewProp
           </div>
           
           {/* Line Items Table */}
-          <div className="mb-8 overflow-x-auto">
-            <table className="w-full border-collapse" style={{ tableLayout: 'auto', minWidth: '600px' }}>
+          <div className="mb-8">
+            <table className="w-full border-collapse" style={{ tableLayout: 'fixed', width: '100%' }}>
               <thead>
                 <tr style={{ backgroundColor: '#dbeafe' }} className="text-slate-900">
-                  <th className="border border-slate-300 p-2 text-left" style={{ width: '5%' }}>#</th>
-                  <th className="border border-slate-300 p-2 text-left" style={{ width: '35%' }}>Description</th>
-                  <th className="border border-slate-300 p-2 text-left" style={{ width: '10%' }}>Unit</th>
-                  <th className="border border-slate-300 p-2 text-right" style={{ width: '10%' }}>Qty</th>
-                  <th className="border border-slate-300 p-2 text-right" style={{ width: '10%' }}>Rate</th>
-                  <th className="border border-slate-300 p-2 text-right" style={{ width: '10%' }}>Amount</th>
-                  <th className="border border-slate-300 p-2 text-right" style={{ width: '10%' }}>Tax</th>
-                  <th className="border border-slate-300 p-2 text-right" style={{ width: '10%' }}>Total</th>
+                  <th className="border border-slate-300 p-2 text-left" style={{ width: '4%' }}>#</th>
+                  <th className="border border-slate-300 p-2 text-left" style={{ width: '32%' }}>Description</th>
+                  <th className="border border-slate-300 p-2 text-left" style={{ width: '8%' }}>Unit</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '12%' }}>Qty</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '14%' }}>Rate</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '14%' }}>Amount</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '14%' }}>Tax</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '16%' }}>Total</th>
                 </tr>
               </thead>
               <tbody>
                 {poData.lineItems.length > 0 ? (
                   poData.lineItems.map((item, index) => (
                     <tr key={item.id} className="hover:bg-slate-50">
-                      <td className="border border-slate-300 p-2">{index + 1}</td>
-                      <td className="border border-slate-300 p-2" style={{ wordWrap: 'break-word', maxWidth: '200px' }}>{item.description || 'N/A'}</td>
-                      <td className="border border-slate-300 p-2">{item.unit || '-'}</td>
-                      <td className="border border-slate-300 p-2 text-right">{item.quantity}</td>
-                      <td className="border border-slate-300 p-2 text-right">₹{item.rate.toFixed(2)}</td>
-                      <td className="border border-slate-300 p-2 text-right">₹{item.amount.toFixed(2)}</td>
-                      <td className="border border-slate-300 p-2 text-right">₹{item.taxAmount.toFixed(2)}</td>
-                      <td className="border border-slate-300 p-2 text-right font-semibold">₹{item.total.toFixed(2)}</td>
+                      <td className="border border-slate-300 p-2 break-words">{index + 1}</td>
+                      <td className="border border-slate-300 p-2 description-cell break-words">{item.description || 'N/A'}</td>
+                      <td className="border border-slate-300 p-2 break-words">{item.unit || '-'}</td>
+                      <td className="border border-slate-300 p-2 numeric-cell text-right break-words">{item.quantity}</td>
+                      <td className="border border-slate-300 p-2 numeric-cell text-right break-words">{item.rate.toFixed(2)}</td>
+                      <td className="border border-slate-300 p-2 numeric-cell text-right break-words">{item.amount.toFixed(2)}</td>
+                      <td className="border border-slate-300 p-2 numeric-cell text-right break-words">{item.taxAmount.toFixed(2)}</td>
+                      <td className="border border-slate-300 p-2 numeric-cell text-right break-words">{item.total.toFixed(2)}</td>
                     </tr>
                   ))
                 ) : (
@@ -163,7 +235,7 @@ export default function POPreview({ poData, onDownload, onPrint }: POPreviewProp
           )}
           
           {/* Signature */}
-          <div className="mt-12 pt-8 border-t border-slate-300 signature-section">
+          <div className="mt-12 pt-8 border-t border-slate-300">
             <div className="flex justify-between">
               <div>
                 <p className="text-slate-600 mb-8">Vendor Signature</p>
@@ -172,7 +244,7 @@ export default function POPreview({ poData, onDownload, onPrint }: POPreviewProp
                 </div>
               </div>
               <div>
-                <p className="text-slate-600 mb-8">Authorized Signatory</p>
+                <p className="text-slate-600 mb-8">Authorized Signature</p>
                 <div className="border-t border-slate-400 w-48 pt-1">
                   <p className="text-xs text-slate-500">Date: ___________</p>
                 </div>
