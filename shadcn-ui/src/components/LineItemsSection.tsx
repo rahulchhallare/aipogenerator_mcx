@@ -93,7 +93,7 @@ export default function LineItemsSection({
                   min="1"
                   placeholder="0"
                   value={item.quantity || ''}
-                  onChange={(e) => onUpdateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
+                  onChange={(e) => onUpdateItem(item.id, 'quantity', e.target.value)}
                   className="border-slate-300 focus:border-blue-500"
                 />
               </div>
@@ -106,7 +106,7 @@ export default function LineItemsSection({
                   step="0.01"
                   placeholder="0.00"
                   value={item.rate || ''}
-                  onChange={(e) => onUpdateItem(item.id, 'rate', parseFloat(e.target.value) || 0)}
+                  onChange={(e) => onUpdateItem(item.id, 'rate', e.target.value)}
                   className="border-slate-300 focus:border-blue-500"
                 />
               </div>
@@ -120,7 +120,7 @@ export default function LineItemsSection({
                   step="0.01"
                   placeholder="0"
                   value={item.taxRate || ''}
-                  onChange={(e) => onUpdateItem(item.id, 'taxRate', parseFloat(e.target.value) || 0)}
+                  onChange={(e) => onUpdateItem(item.id, 'taxRate', e.target.value)}
                   className="border-slate-300 focus:border-blue-500"
                 />
               </div>

@@ -38,12 +38,22 @@ export default function POPreview({ poData, onDownload, onPrint }: POPreviewProp
           ${styles}
           <style>
             @page {
+              size: A4;
               margin: 0;
             }
             body {
               background-color: white;
               margin: 0;
-              padding: 40px;
+              padding: 20mm;
+              width: 210mm;
+              min-height: 297mm;
+              box-sizing: border-box;
+            }
+            /* Override the on-screen card styles for print */
+            #po-preview {
+              border: none !important;
+              box-shadow: none !important;
+              padding: 0 !important;
             }
             @media print {
               body {
@@ -62,14 +72,17 @@ export default function POPreview({ poData, onDownload, onPrint }: POPreviewProp
     printDocument.write(contentHTML);
     printDocument.close();
 
-    setTimeout(() => {
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
-      // Remove iframe after a delay
+    // Wait for resources (CSS/Images) to load before printing
+    iframe.onload = () => {
       setTimeout(() => {
-        document.body.removeChild(iframe);
-      }, 1000);
-    }, 500);
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        // Remove iframe after a delay
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+        }, 1000);
+      }, 500);
+    };
   };
 
   const handlePrint = () => {
@@ -173,14 +186,14 @@ export default function POPreview({ poData, onDownload, onPrint }: POPreviewProp
             <table className="w-full border-collapse" style={{ tableLayout: 'fixed', width: '100%' }}>
               <thead>
                 <tr style={{ backgroundColor: '#dbeafe' }} className="text-slate-900">
-                  <th className="border border-slate-300 p-2 text-left" style={{ width: '4%' }}>#</th>
-                  <th className="border border-slate-300 p-2 text-left" style={{ width: '32%' }}>Description</th>
+                  <th className="border border-slate-300 p-2 text-left" style={{ width: '5%' }}>#</th>
+                  <th className="border border-slate-300 p-2 text-left" style={{ width: '27%' }}>Description</th>
                   <th className="border border-slate-300 p-2 text-left" style={{ width: '8%' }}>Unit</th>
-                  <th className="border border-slate-300 p-2 text-right" style={{ width: '12%' }}>Qty</th>
-                  <th className="border border-slate-300 p-2 text-right" style={{ width: '14%' }}>Rate</th>
-                  <th className="border border-slate-300 p-2 text-right" style={{ width: '14%' }}>Amount</th>
-                  <th className="border border-slate-300 p-2 text-right" style={{ width: '14%' }}>Tax</th>
-                  <th className="border border-slate-300 p-2 text-right" style={{ width: '16%' }}>Total</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '8%' }}>Qty</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '12%' }}>Rate</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '15%' }}>Amount</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '10%' }}>Tax</th>
+                  <th className="border border-slate-300 p-2 text-right" style={{ width: '15%' }}>Total</th>
                 </tr>
               </thead>
               <tbody>
