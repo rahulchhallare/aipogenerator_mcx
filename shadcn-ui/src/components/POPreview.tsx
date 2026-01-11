@@ -102,21 +102,21 @@ export default function POPreview({ poData, onDownload, onPrint }: POPreviewProp
             Live Preview
           </CardTitle>
           <div className="flex gap-2">
-            <Button 
+            <Button
               type="button"
               size="sm" 
               variant="outline"
               onClick={handlePrint}
-              className="border-slate-300"
+              className="border-slate-300 track-download"
             >
               <Printer className="h-4 w-4 mr-1" />
               Print
             </Button>
-            <Button 
+            <Button
               type="button"
               size="sm"
               onClick={handleDownload}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 track-download"
             >
               <Download className="h-4 w-4 mr-1" />
               Download
